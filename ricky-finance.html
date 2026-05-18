@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R.O. Finance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#080808;
+  --bg2:#0f0f0f;
+  --bg3:#161616;
+  --bg4:#1e1e1e;
+  --bg5:#252525;
+  --border:#1a1f0a;
+  --border2:#252e10;
+  --border3:#303d16;
+  --olive:#6b7c2e;
+  --olive2:#8a9e3a;
+  --olive3:#a8bf46;
+  --olive4:#c4d86a;
+  --olive-dim:#0a0d04;
+  --olive-mid:#141a08;
+  --text:#e8e4d8;
+  --text2:#a09888;
+  --text3:#5a5248;
+  --text4:#353028;
+  --serif:'Times New Roman',Times,Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --r:5px;
+  --red:#8b3a3a;
+  --red-dim:#150808;
+  --amber:#8b6d2a;
+  --amber-dim:#120e04;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.97);border-bottom:1px solid var(--border2);backdrop-filter:blur(10px)}
+.nav-inner{max-width:940px;margin:0 auto;display:flex;align-items:stretch;padding:0 16px}
+.nav-brand{font-family:var(--mono);font-size:12px;color:var(--olive3);padding:0 16px 0 0;border-right:1px solid var(--border2);margin-right:4px;display:flex;align-items:center;letter-spacing:.08em;white-space:nowrap}
+.nav-tab{font-family:var(--mono);font-size:10px;color:var(--text3);padding:14px 12px;cursor:pointer;border:none;background:transparent;transition:color .15s;letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.nav-tab:hover{color:var(--text2)}
+.nav-tab.active{color:var(--olive3);border-bottom-color:var(--olive3)}
+
+/* ── LAYOUT ── */
+.main{max-width:940px;margin:0 auto;padding:28px 16px 80px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── HEADINGS ── */
+.page-title{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:-.3px;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text3);font-style:italic;margin-bottom:24px}
+h3{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border2)}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card.olive-border{border-color:var(--olive2)}
+.card.olive-bg{background:var(--olive-dim);border-color:var(--border3)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+
+/* ── KPI TILES ── */
+.kpi{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:16px 14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.kpi.g::before{background:var(--olive3)}
+.kpi.r::before{background:var(--red)}
+.kpi.a::before{background:var(--amber)}
+.kpi.b::before{background:#2a5a8b}
+.kpi-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:8px}
+.kpi-val{font-family:var(--mono);font-size:20px;font-weight:400;color:var(--text);letter-spacing:-.5px}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── TABLE ROWS ── */
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.row .lbl{color:var(--text2);font-size:14px}
+.row .val{font-family:var(--mono);font-size:13px;color:var(--text)}
+.row.neg .val{color:#b06060}
+.row.pos .val{color:var(--olive3)}
+.row.total{padding-top:11px;border-top:1px solid var(--border2);margin-top:4px;border-bottom:none}
+.row.total .lbl{font-style:italic;color:var(--text)}
+.row.total .val{color:var(--olive3);font-size:14px}
+
+/* ── BUDGET BARS ── */
+.brow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.brow:last-child{border-bottom:none}
+.bicon{font-size:13px;width:26px;text-align:center;flex-shrink:0}
+.binfo{flex:1;min-width:0}
+.bname{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bsub{font-size:10px;color:var(--text3)}
+.btrack{width:72px;height:3px;background:var(--bg5);border-radius:2px;flex-shrink:0}
+.bfill{height:3px;border-radius:2px;transition:width .4s}
+.bamt{font-family:var(--mono);font-size:12px;color:var(--text2);min-width:48px;text-align:right;flex-shrink:0}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin:10px 0}
+.prog-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:5px}
+.prog-track{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .7s ease}
+.prog-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text4);margin-top:4px}
+
+/* ── TAGS ── */
+.tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:2px;margin:2px 2px 0 0}
+.tag.olive{background:var(--olive-mid);color:var(--olive3);border:1px solid var(--border3)}
+.tag.red{background:var(--red-dim);color:#c08080;border:1px solid #2a1212}
+.tag.blue{background:#08101a;color:#7090c0;border:1px solid #162030}
+.tag.amber{background:var(--amber-dim);color:#b09040;border:1px solid #201800}
+
+/* ── LOAN ROWS ── */
+.lrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.lrow:last-child{border-bottom:none}
+.lrow-type{font-size:13px;color:var(--text2)}
+.lrate{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:2px;background:var(--amber-dim);color:#b09040;border:1px solid #201800}
+.lbal{font-family:var(--mono);font-size:13px;color:var(--text)}
+
+/* ── SURPLUS HERO ── */
+.hero{text-align:center;padding:30px 20px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);margin-bottom:14px}
+.hero-num{font-family:var(--mono);font-size:44px;font-weight:300;letter-spacing:-2px;color:var(--olive3)}
+.hero-lbl{font-size:13px;color:var(--text3);margin-top:6px;font-style:italic}
+
+/* ── INTRO ── */
+.intro{padding:28px 0 22px;border-bottom:1px solid var(--border2);margin-bottom:24px}
+.intro h1{font-size:30px;font-weight:400;letter-spacing:-.5px;margin-bottom:5px}
+.intro-sub{font-style:italic;color:var(--text2);font-size:15px}
+.intro-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--olive3);background:var(--olive-dim);border:1px solid var(--border3);padding:3px 9px;border-radius:2px}
+
+/* ── CALENDAR ── */
+.cal-block{display:grid;grid-template-columns:68px 1fr}
+.cal-mc{display:flex;flex-direction:column;align-items:center;padding-top:12px}
+.cal-mo{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;line-height:1.4}
+.cal-mo span{display:block;font-size:11px;color:var(--text2)}
+.cal-dot{width:9px;height:9px;border-radius:50%;margin-top:8px;flex-shrink:0}
+.cal-line{width:1px;background:var(--border2);flex:1;min-height:16px;margin-top:3px}
+.cal-ec{padding:10px 0 14px 16px;border-bottom:1px solid var(--border)}
+.cal-block:last-child .cal-ec{border-bottom:none}
+.cal-block:last-child .cal-line{display:none}
+.cal-phase{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--olive2);background:var(--olive-dim);border:1px solid var(--border3);padding:2px 8px;border-radius:2px;display:inline-block;margin-bottom:10px}
+.ev{display:flex;gap:8px;align-items:flex-start;padding:6px 9px;border-radius:4px;margin-bottom:6px;border:1px solid transparent;cursor:default}
+.ev:last-child{margin-bottom:0}
+.ev:hover{border-color:var(--border2)}
+.ev-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.ev-title{font-size:13px;color:var(--text);margin-bottom:1px;font-style:italic}
+.ev-desc{font-size:11px;color:var(--text3);line-height:1.6}
+.ev.car{background:rgba(139,58,58,.06)}
+.ev.house{background:rgba(42,90,139,.06)}
+.ev.money{background:rgba(107,124,46,.06)}
+.ev.career{background:rgba(100,80,160,.06)}
+.ev.loan{background:rgba(139,109,42,.06)}
+
+/* ── HOUSE CARDS ── */
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.hcard{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:16px}
+.hcard.rec{border-color:var(--olive2)}
+.hcard-title{font-size:14px;font-style:italic;color:var(--text);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.rec-badge{font-family:var(--mono);font-size:8px;background:var(--olive-mid);color:var(--olive3);border:1px solid var(--border3);padding:2px 6px;border-radius:2px}
+.hline{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)}
+.hline:last-child{border-bottom:none}
+.hl{color:var(--text3)}
+.hv{font-family:var(--mono);color:var(--text)}
+
+/* ── UPDATE FIELDS ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.field input{background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border .15s;width:100%}
+.field input:focus{border-color:var(--olive2)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:2px}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .grid4{grid-template-columns:1fr 1fr}
+  .grid3{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .hgrid{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .nav-tab{padding:13px 9px;font-size:9px}
+  .nav-brand{padding-right:10px}
+  .hero-num{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">R.O. Finance</div>
+    <button class="nav-tab active" onclick="go('overview',this)">Overview</button>
+    <button class="nav-tab" onclick="go('budget',this)">Budget</button>
+    <button class="nav-tab" onclick="go('loans',this)">Loans</button>
+    <button class="nav-tab" onclick="go('house',this)">House</button>
+    <button class="nav-tab" onclick="go('calendar',this)">Calendar</button>
+    <button class="nav-tab" onclick="go('update',this)">Update</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- ══ OVERVIEW ══ -->
+<div id="panel-overview" class="panel active">
+  <div class="intro">
+    <h1>Ricardo Ortiz</h1>
+    <div class="intro-sub">P&G Digital Planning & Automation — Cincinnati, OH</div>
+    <div class="intro-pills">
+      <span class="pill">$92,000 salary</span>
+      <span class="pill">July 13 2026 start</span>
+      <span class="pill">763 credit score</span>
+      <span class="pill">407 Race St #1014</span>
+      <span class="pill">Lease → Jul 29 2027</span>
+    </div>
+  </div>
+
+  <div class="grid4">
+    <div class="kpi g"><div class="kpi-lbl">Net / month</div><div class="kpi-val" id="kpi-net">$5,518</div><div class="kpi-sub">after tax + 401k</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Expenses</div><div class="kpi-val" id="kpi-exp">$3,688</div><div class="kpi-sub">all bills + loans</div></div>
+    <div class="kpi g"><div class="kpi-lbl">Surplus</div><div class="kpi-val" id="kpi-surplus">$1,830</div><div class="kpi-sub">to save / invest</div></div>
+    <div class="kpi a"><div class="kpi-lbl">House fund</div><div class="kpi-val" id="kpi-house">$0</div><div class="kpi-sub">goal: $30,000</div></div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-num" id="hero-surplus">$1,830</div>
+    <div class="hero-lbl">monthly surplus — <em>every dollar above this builds your future</em></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Cash flow — year 2 (full year)</h3>
+      <div class="row"><span class="lbl">Gross salary</span><span class="val">$7,667</span></div>
+      <div class="row neg"><span class="lbl">401k (7%)</span><span class="val">−$537</span></div>
+      <div class="row neg"><span class="lbl">Federal tax</span><span class="val">−$881</span></div>
+      <div class="row neg"><span class="lbl">Ohio state tax</span><span class="val">−$133</span></div>
+      <div class="row neg"><span class="lbl">Cincinnati city tax</span><span class="val">−$128</span></div>
+      <div class="row neg"><span class="lbl">FICA (SS + Medicare)</span><span class="val">−$545</span></div>
+      <div class="row total"><span class="lbl">Take-home</span><span class="val">$5,443</span></div>
+    </div>
+    <div class="card">
+      <h3>12-month projection</h3>
+      <div class="row"><span class="lbl">Monthly surplus × 12</span><span class="val" id="proj-mo">$21,960</span></div>
+      <div class="row pos"><span class="lbl">STAR bonus (net ~72%)</span><span class="val">$4,637</span></div>
+      <div class="row total"><span class="lbl">Projected saved</span><span class="val" id="proj-total">$26,597</span></div>
+      <div class="prog-wrap" style="margin-top:16px">
+        <div class="prog-labels"><span>House fund progress</span><span id="house-pct-ov">0%</span></div>
+        <div class="prog-track"><div class="prog-fill" id="house-prog-ov" style="width:0%;background:var(--olive3)"></div></div>
+        <div class="prog-axis"><span>$0</span><span>$15k</span><span>$30k goal</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Key milestones</h3>
+    <div class="row"><span class="lbl">Jul 13, 2026</span><span class="val">P&G Day 1</span></div>
+    <div class="row pos"><span class="lbl">September 2026</span><span class="val">STAR bonus lands — ~$4,637 net</span></div>
+    <div class="row pos"><span class="lbl">March 2027</span><span class="val">Mazda3 fully paid off — $841 saved</span></div>
+    <div class="row pos"><span class="lbl">July 2027</span><span class="val">Mortgage pre-approval</span></div>
+    <div class="row"><span class="lbl">Jul 29, 2027</span><span class="val">Lease ends — 407 Race St</span></div>
+    <div class="row pos"><span class="lbl">Late 2027</span><span class="val">Close on Cincinnati home</span></div>
+  </div>
+</div>
+
+<!-- ══ BUDGET ══ -->
+<div id="panel-budget" class="panel">
+  <div class="page-title">Monthly budget</div>
+  <div class="page-sub">Bars show spend vs. your baseline. Update actuals in the Update tab.</div>
+
+  <div class="card">
+    <h3>Fixed costs</h3>
+    <div id="fixed-rows"></div>
+    <div class="row total"><span class="lbl">Fixed total</span><span class="val" id="fixed-total">—</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Variable costs</h3>
+    <div id="var-rows"></div>
+    <div class="row total"><span class="lbl">Variable total</span><span class="val" id="var-total">—</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Monthly summary</h3>
+    <div class="row"><span class="lbl">Fixed costs</span><span class="val" id="s-fixed">—</span></div>
+    <div class="row"><span class="lbl">Variable costs</span><span class="val" id="s-var">—</span></div>
+    <div class="row"><span class="lbl">Loan payments (net of P&G)</span><span class="val" id="s-loans">$205</span></div>
+    <div class="row total"><span class="lbl">Total monthly out</span><span class="val" id="s-total">—</span></div>
+  </div>
+</div>
+
+<!-- ══ LOANS ══ -->
+<div id="panel-loans" class="panel">
+  <div class="page-title">Debt tracker</div>
+  <div class="page-sub">Car loan first — 12.94% is expensive. Student loans after the house closes.</div>
+
+  <div class="card olive-bg olive-border">
+    <h3 style="color:var(--olive2)">P&G student loan benefit</h3>
+    <div class="row"><span class="lbl">Monthly contribution</span><span class="val" style="color:var(--olive3)">$100 / mo</span></div>
+    <div class="row"><span class="lbl">Lifetime maximum</span><span class="val">$10,000</span></div>
+    <div class="row"><span class="lbl">Coverage remaining</span><span class="val" style="color:var(--olive3)" id="pg-coverage">~100 months</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Car loan — Ally (2015 Mazda3) <span style="color:#b06060;margin-left:6px">12.94% APR</span></h3>
+    <div class="row"><span class="lbl">Current balance</span><span class="val" id="car-bal-display">$5,185.78</span></div>
+    <div class="row"><span class="lbl">Regular payment</span><span class="val">$174.70 / mo</span></div>
+    <div class="row pos"><span class="lbl">Extra payment (blitz)</span><span class="val">+$500 / mo</span></div>
+    <div class="row pos"><span class="lbl">Total monthly</span><span class="val">$674.70 / mo</span></div>
+    <div class="row total"><span class="lbl">Payoff date</span><span class="val">March 2027 — 27 months early</span></div>
+    <div class="prog-wrap" style="margin-top:14px">
+      <div class="prog-labels"><span>Payoff progress</span><span id="car-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="car-prog" style="width:0%;background:#8b3a3a"></div></div>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:10px;font-style:italic">Update balance monthly in the Update tab.</p>
+  </div>
+
+  <div class="card">
+    <h3>Payoff schedule — $500 extra / mo</h3>
+    <div id="car-schedule"></div>
+    <div class="row total"><span class="lbl">Interest saved vs standard repayment</span><span class="val" style="color:var(--olive3)">$841.07</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Federal student loans — $27,591.96 total</h3>
+    <div class="lrow"><span class="lrow-type">Subsidized</span><span class="lrate">6.39%</span><span class="lbal">$5,500.00</span></div>
+    <div class="lrow"><span class="lrow-type">Unsubsidized</span><span class="lrate">6.39%</span><span class="lbal">$2,064.38</span></div>
+    <div class="lrow"><span class="lrow-type">Subsidized</span><span class="lrate">6.53%</span><span class="lbal">$5,500.00</span></div>
+    <div class="lrow"><span class="lrow-type">Unsubsidized</span><span class="lrate">6.53%</span><span class="lbal">$2,187.90</span></div>
+    <div class="lrow"><span class="lrow-type">Subsidized</span><span class="lrate">5.50%</span><span class="lbal">$4,500.00</span></div>
+    <div class="lrow"><span class="lrow-type">Unsubsidized</span><span class="lrate">5.50%</span><span class="lbal">$2,173.16</span></div>
+    <div class="lrow"><span class="lrow-type">Subsidized</span><span class="lrate">4.99%</span><span class="lbal">$3,500.00</span></div>
+    <div class="lrow"><span class="lrow-type">Unsubsidized</span><span class="lrate">4.99%</span><span class="lbal">$2,166.52</span></div>
+    <div class="row total"><span class="lbl">Your out-of-pocket / mo</span><span class="val">$205 <span style="color:var(--text3);font-size:11px">(after P&G $100)</span></span></div>
+    <p style="font-size:11px;color:var(--text3);margin-top:10px;font-style:italic">Strategy: pay minimums until car is gone (Mar 2027) and house closes (late 2027). Then attack 6.39–6.53% loans first.</p>
+  </div>
+</div>
+
+<!-- ══ HOUSE ══ -->
+<div id="panel-house" class="panel">
+  <div class="page-title">House fund</div>
+  <div class="page-sub">Goal: 10% down on a ~$300k Cincinnati home by July 2027.</div>
+
+  <div class="card olive-border">
+    <h3>Track your savings</h3>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">
+      <div class="field" style="flex:1"><label>Current savings ($)</label><input type="number" id="house-input" value="0" placeholder="0" oninput="updateHouse(this.value)"></div>
+      <div style="padding-bottom:10px;font-family:var(--mono);font-size:11px;color:var(--text3)">of $30,000</div>
+    </div>
+    <div class="prog-labels" id="house-prog-labels"><span>$0 saved</span><span>$30,000 to go</span></div>
+    <div class="prog-track" style="height:8px"><div class="prog-fill" id="house-prog-bar" style="width:0%;background:var(--olive3)"></div></div>
+    <div class="prog-axis"><span>$0</span><span>$10k</span><span>$20k</span><span>$30k goal</span></div>
+  </div>
+
+  <div class="hgrid">
+    <div class="hcard rec">
+      <div class="hcard-title">10% down <span class="rec-badge">recommended</span></div>
+      <div class="hline"><span class="hl">Down payment</span><span class="hv">$30,000</span></div>
+      <div class="hline"><span class="hl">Home price</span><span class="hv">~$300,000</span></div>
+      <div class="hline"><span class="hl">Loan amount</span><span class="hv">$270,000</span></div>
+      <div class="hline"><span class="hl">Mortgage / mo</span><span class="hv">$1,796</span></div>
+      <div class="hline"><span class="hl">PMI / mo</span><span class="hv">~$250</span></div>
+      <div class="hline"><span class="hl">Total housing</span><span class="hv">~$2,046</span></div>
+      <div class="hline"><span class="hl">DTI ratio</span><span class="hv" style="color:var(--olive3)">30.7% ✓</span></div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-title">5% down</div>
+      <div class="hline"><span class="hl">Down payment</span><span class="hv">$15,000</span></div>
+      <div class="hline"><span class="hl">Home price</span><span class="hv">~$300,000</span></div>
+      <div class="hline"><span class="hl">Loan amount</span><span class="hv">$285,000</span></div>
+      <div class="hline"><span class="hl">Mortgage / mo</span><span class="hv">$1,896</span></div>
+      <div class="hline"><span class="hl">PMI / mo</span><span class="hv">~$250</span></div>
+      <div class="hline"><span class="hl">Total housing</span><span class="hv">~$2,146</span></div>
+      <div class="hline"><span class="hl">DTI ratio</span><span class="hv" style="color:#b09040">33%</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ownership timeline</h3>
+    <div class="row"><span class="lbl">Jul 2026 — Open HYSA</span><span class="val">Marcus / Ally at ~4.5% APY. Auto-transfer $1,500/mo.</span></div>
+    <div class="row pos"><span class="lbl">Sep 2026 — STAR bonus</span><span class="val">~$4,637 net → house fund</span></div>
+    <div class="row pos"><span class="lbl">Mar 2027 — Car paid off</span><span class="val">$175/mo freed → house fund</span></div>
+    <div class="row pos"><span class="lbl">Jul 2027 — Pre-approval</span><span class="val">12mo W-2 + 763 score + low DTI</span></div>
+    <div class="row"><span class="lbl">Jul 29, 2027 — Lease ends</span><span class="val">Plan for 30–60 days temp housing if needed</span></div>
+    <div class="row total"><span class="lbl">Late 2027 — Close on home</span><span class="val">Equity building begins</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Credit position</h3>
+    <div class="row pos"><span class="lbl">Current score</span><span class="val">763 — Very Good</span></div>
+    <div class="row"><span class="lbl">Target for best rates</span><span class="val">780+</span></div>
+    <div class="row"><span class="lbl">Homebody rent reporting</span><span class="val">Active — builds history monthly</span></div>
+    <div class="row total"><span class="lbl">Rule</span><span class="val">No new credit lines until post pre-approval</span></div>
+  </div>
+</div>
+
+<!-- ══ CALENDAR ══ -->
+<div id="panel-calendar" class="panel">
+  <div class="page-title">Strategy calendar</div>
+  <div class="page-sub">Every financial milestone Jul 2026 → late 2027.</div>
+  <div id="cal-timeline"></div>
+</div>
+
+<!-- ══ UPDATE ══ -->
+<div id="panel-update" class="panel">
+  <div class="page-title">Update your numbers</div>
+  <div class="page-sub">Edit these monthly as your real numbers come in. Everything recalculates instantly.</div>
+
+  <div class="card">
+    <h3>Income</h3>
+    <div class="fgrid">
+      <div class="field"><label>Net take-home / mo ($)</label><input type="number" id="u-net" value="5518" oninput="recalc()"></div>
+      <div class="field"><label>Student loan payment / mo ($)</label><input type="number" id="u-loan" value="205" oninput="recalc()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Fixed expenses</h3>
+    <div class="fgrid">
+      <div class="field"><label>Rent + fees ($)</label><input type="number" id="u-rent" value="1821" oninput="recalc()"></div>
+      <div class="field"><label>Car insurance — Progressive ($)</label><input type="number" id="u-ins" value="217" oninput="recalc()"></div>
+      <div class="field"><label>Car payment — Ally ($)</label><input type="number" id="u-car" value="675" oninput="recalc()"></div>
+      <div class="field"><label>Utilities ($)</label><input type="number" id="u-util" value="120" oninput="recalc()"></div>
+      <div class="field"><label>Internet ($)</label><input type="number" id="u-inet" value="60" oninput="recalc()"></div>
+      <div class="field"><label>Subscriptions ($)</label><input type="number" id="u-subs" value="100" oninput="recalc()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Variable expenses</h3>
+    <div class="fgrid">
+      <div class="field"><label>Groceries ($)</label><input type="number" id="u-groc" value="350" oninput="recalc()"></div>
+      <div class="field"><label>Eating out ($)</label><input type="number" id="u-eat" value="250" oninput="recalc()"></div>
+      <div class="field"><label>Gas ($)</label><input type="number" id="u-gas" value="100" oninput="recalc()"></div>
+      <div class="field"><label>Gym ($)</label><input type="number" id="u-gym" value="100" oninput="recalc()"></div>
+      <div class="field"><label>Misc ($)</label><input type="number" id="u-misc" value="250" oninput="recalc()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Savings & debt</h3>
+    <div class="fgrid">
+      <div class="field"><label>House fund saved ($)</label><input type="number" id="u-house" value="0" oninput="syncHouse()"></div>
+      <div class="field"><label>Car loan balance ($)</label><input type="number" id="u-carbal" value="5185.78" oninput="syncCarBal()"></div>
+    </div>
+  </div>
+
+  <div class="hero" style="margin-top:4px">
+    <div class="hero-num" id="update-surplus">$1,830</div>
+    <div class="hero-lbl">updated monthly surplus</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── FIXED DATA ──
+const FIXED=[
+  {icon:'🏢',name:'Rent + fees',sub:'407 Race St #1014',id:'u-rent',budget:1821},
+  {icon:'🚗',name:'Car insurance',sub:'Progressive',id:'u-ins',budget:217},
+  {icon:'💳',name:'Car payment',sub:'Ally — blitz mode',id:'u-car',budget:675},
+  {icon:'⚡',name:'Utilities',sub:'Electric + water/sewer',id:'u-util',budget:120},
+  {icon:'📡',name:'Internet',sub:'Cincinnati provider',id:'u-inet',budget:60},
+  {icon:'📱',name:'Subscriptions',sub:'Spotify + misc',id:'u-subs',budget:100},
+];
+const VAR=[
+  {icon:'🥗',name:'Groceries',sub:'weekly shop',id:'u-groc',budget:350},
+  {icon:'🍜',name:'Eating out',sub:'restaurants + delivery',id:'u-eat',budget:250},
+  {icon:'⛽',name:'Gas',sub:'Mazda3',id:'u-gas',budget:100},
+  {icon:'💪',name:'Gym',sub:'Cincinnati',id:'u-gym',budget:100},
+  {icon:'🎯',name:'Misc',sub:'clothes, life',id:'u-misc',budget:250},
+];
+const CAR_SCHED=[
+  {mo:'Jul 2026',int:55.92,bal:4567.00},
+  {mo:'Aug 2026',int:49.25,bal:3941.55},
+  {mo:'Sep 2026',int:42.50,bal:3309.35},
+  {mo:'Oct 2026',int:35.69,bal:2670.34},
+  {mo:'Nov 2026',int:28.80,bal:2024.43},
+  {mo:'Dec 2026',int:21.83,bal:1371.56},
+  {mo:'Jan 2027',int:14.79,bal:711.65},
+  {mo:'Feb 2027',int:7.67,bal:44.63},
+  {mo:'Mar 2027',int:0.48,bal:0},
+];
+const CAL=[
+  {mo:'Jul',yr:'2026',dot:'#7090c0',phase:'Phase I — Launch',events:[
+    {type:'career',t:'Day 1 at P&G — July 13',d:'Show up sharp. Meet Xabi. First impressions compound. Learn the room before you change it.',tags:['P&G start']},
+    {type:'money',t:'Open HYSA — Marcus or Ally',d:'~4.5% APY. Auto-transfer $1,500/mo. Name the account "House Fund." Make it concrete.',tags:['HYSA']},
+    {type:'car',t:'Car loan blitz begins — $674.70/mo',d:'$174.70 regular + $500 extra. Balance: $5,185 → $4,567. Interest cost this month: $55.92.',tags:['bal: $4,567']},
+    {type:'money',t:'Set up 401k + P&G loan benefit',d:'Min 6% into 401k. Confirm the $100/mo student loan contribution is active through HR.',tags:['401k','$100/mo free']},
+  ]},
+  {mo:'Aug',yr:'2026',dot:'#c08080',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $4,567 → $3,942. Interest: $49.25.',tags:['bal: $3,942']},
+    {type:'money',t:'Build $3k emergency buffer',d:'Before stacking the house fund hard, protect against Cincinnati surprises. New city, new expenses.'},
+    {type:'career',t:'30-day check-in with Xabi',d:'Schedule a 1:1. Ask what success looks like at 90 days. Build trust early — it compounds.'},
+    {type:'house',t:'Start learning Cincinnati neighborhoods',d:'OTR, Hyde Park, Oakley, Mariemont. Track median prices. No pressure — just pattern recognition.'},
+  ]},
+  {mo:'Sep',yr:'2026',dot:'var(--olive3)',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $3,942 → $3,309. Interest: $42.50. Down $1,877 in just 3 months.',tags:['bal: $3,309']},
+    {type:'money',t:'STAR bonus lands — ~$4,637 net',d:'7% of $92k gross, ~$4,637 after tax. Every dollar goes to house fund. Do not split.',tags:['$4,637 bonus → house']},
+    {type:'career',t:'60-day check-in',d:'Ask for direct feedback. What are you doing well? Where to focus? Early loops separate standouts.'},
+  ]},
+  {mo:'Oct',yr:'2026',dot:'#c08080',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $3,309 → $2,670. Past the halfway point on the loan.',tags:['bal: $2,670']},
+    {type:'career',t:'Columbus Marathon — race day',d:'Sub-3:05 is the target. Same long-game discipline you\'re running at P&G.',tags:['marathon']},
+    {type:'house',t:'House fund: ~$9k',d:'$1,500/mo contributions compounding. Stay disciplined — this account is untouchable.'},
+  ]},
+  {mo:'Nov',yr:'2026',dot:'#c08080',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $2,670 → $2,024. Under $2k to go.',tags:['bal: $2,024']},
+    {type:'money',t:'4-month budget review',d:'Pull Chase statements. Compare actuals vs. plan. Update the app with real numbers. Adjust.'},
+    {type:'career',t:'90-day review',d:'Formal milestone. Come prepared: documented wins, goals for next 90 days. Articulate your own value.'},
+  ]},
+  {mo:'Dec',yr:'2026',dot:'#c08080',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $2,024 → $1,372. One month of real payments left.',tags:['bal: $1,372']},
+    {type:'house',t:'House fund: ~$15k',d:'Approaching 5% down territory. 10% goal is on track.'},
+    {type:'money',t:'Year-end review + credit guard',d:'Check 401k allocation. Confirm P&G loan contribution. Cancel unused subs. No new credit lines — mortgage is 7 months away.',tags:['credit protection']},
+  ]},
+  {mo:'Jan',yr:'2027',dot:'#c08080',events:[
+    {type:'car',t:'Car payment — $674.70',d:'Balance: $1,372 → $712. Almost done.',tags:['bal: $712']},
+    {type:'money',t:'Pull your credit report',d:'annualcreditreport.com — all three bureaus free. Dispute anything incorrect. 6 months to fix before mortgage.',tags:['credit check']},
+    {type:'career',t:'6-month mark at P&G',d:'Raise your hand for a stretch project. Visibility at P&G matters as much as performance for advancement.'},
+  ]},
+  {mo:'Feb',yr:'2027',dot:'#c08080',events:[
+    {type:'car',t:'Second-to-last payment — $674.70',d:'Balance: $712 → $45. Yes. Forty-five dollars.',tags:['bal: $45']},
+    {type:'money',t:'File taxes — first W-2 from P&G',d:'Mid-year start = lower taxable income. Refund likely. If so, straight to house fund.',tags:['refund → house']},
+    {type:'house',t:'House fund: ~$19k',d:'63% of the way to $30k.'},
+  ]},
+  {mo:'Mar',yr:'2027',dot:'var(--olive3)',events:[
+    {type:'car',t:'FINAL car payment — $45.11 ✓',d:'The Mazda3 is yours. 27 months early. $841 saved in interest. $174.70/mo permanently freed.',tags:['PAID OFF','$841 saved']},
+    {type:'money',t:'Redirect $675/mo → house fund',d:'What went to Ally now goes to Marcus. Monthly savings rate jumps. Compounding faster.',tags:['$675 redirected']},
+    {type:'career',t:'9-month mark — build visibility',d:'Request a cross-functional assignment. At P&G, the exec track gets seeded in years 1–2.'},
+  ]},
+  {mo:'Apr',yr:'2027',dot:'#7090c0',events:[
+    {type:'house',t:'House fund: ~$23k',d:'No car payment. Savings rate higher. $30k is within striking distance.'},
+    {type:'house',t:'Start serious house hunting',d:'Open houses in Hyde Park, Oakley, Mariemont. Know what $280–320k actually buys in Cincinnati.'},
+    {type:'money',t:'Contact a mortgage broker',d:'Broker shops multiple lenders at no cost to you. Get educated on documents needed — don\'t apply yet.'},
+  ]},
+  {mo:'May',yr:'2027',dot:'#7090c0',events:[
+    {type:'house',t:'House fund: ~$25k',d:'Tax refund may push you further. Getting very close.'},
+    {type:'money',t:'Gather mortgage documents',d:'W-2, 2 months pay stubs, 2 months bank statements, tax return. Have these ready before July.'},
+    {type:'loan',t:'Student loan strategy — plan the attack',d:'Post-house: 6.39% and 6.53% loans become top priority. Start modeling now. Snowball from highest rate.'},
+  ]},
+  {mo:'Jun',yr:'2027',dot:'#7090c0',events:[
+    {type:'house',t:'House fund: ~$26–27k',d:'Enough for 10% on $270k or 5% on $300k+ with reserves.'},
+    {type:'house',t:'Final lease month — 407 Race St',d:'Lease ends July 29. Plan move-out. Budget ~$2k for short-term housing if closing is delayed.',tags:['lease ends Jul 29']},
+    {type:'career',t:'Build your annual review self-assessment',d:'Quantify every win from the year. Start now — don\'t wait until the week before the review.'},
+  ]},
+  {mo:'Jul',yr:'2027',dot:'var(--olive3)',phase:'Phase II — Own Something',events:[
+    {type:'house',t:'12-month mark — GET PRE-APPROVED',d:'12 months W-2, 763+ score, 30.7% DTI, ~$26–28k saved. Apply at 2–3 lenders. A 0.25% rate difference on $270k = $16k over 30 years.',tags:['pre-approval']},
+    {type:'house',t:'Lease ends July 29',d:'If not closing yet, short-term furnished housing ~$2k. Worth it — don\'t rush the purchase.',tags:['lease end']},
+    {type:'career',t:'1-year review at P&G',d:'Documented wins, year 2 targets, growth path conversation. This sets your next 12 months.'},
+  ]},
+  {mo:'Late',yr:'2027',dot:'var(--olive3)',events:[
+    {type:'house',t:'Close on your first Cincinnati home',d:'10% down on ~$270–300k. ~$2,046/mo housing. Building equity instead of paying rent.',tags:['homeowner']},
+    {type:'money',t:'Post-close financial reset',d:'Rebuild 3-month emergency fund (~$10k). Then: mortgage principal overpayments → 6.39%+ student loans → taxable investing.'},
+    {type:'loan',t:'Student loan acceleration begins',d:'Car gone, house closed, buffer rebuilt. Attack 6.39% and 6.53% loans. Snowball to the 4.99% last.'},
+    {type:'career',t:'Year 2 — differentiate',d:'Lateral moves, sponsors, stretch projects. Your PE / exec exit options get seeded in years 2–3.'},
+  ]},
+];
+
+// ── NAV ──
+function go(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='budget')renderBudget();
+}
+
+// ── HELPERS ──
+function gv(id,def){return Number(document.getElementById(id)?.value??def);}
+function fmt(n){return '$'+Math.round(Math.abs(n)).toLocaleString();}
+function setEl(id,val,color){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(color)el.style.color=color;}
+
+// ── RECALC ──
+function recalc(){
+  const net=gv('u-net',5518);
+  const loan=gv('u-loan',205);
+  const rent=gv('u-rent',1821);
+  const ins=gv('u-ins',217);
+  const car=gv('u-car',675);
+  const util=gv('u-util',120);
+  const inet=gv('u-inet',60);
+  const subs=gv('u-subs',100);
+  const groc=gv('u-groc',350);
+  const eat=gv('u-eat',250);
+  const gas=gv('u-gas',100);
+  const gym=gv('u-gym',100);
+  const misc=gv('u-misc',250);
+  const total=rent+ins+car+util+inet+subs+groc+eat+gas+gym+misc+loan;
+  const surplus=net-total;
+  const sc=surplus>=0?'var(--olive3)':'#b06060';
+  const sf=(surplus>=0?'$':'−$')+Math.abs(Math.round(surplus)).toLocaleString();
+  ['kpi-surplus','hero-surplus','update-surplus'].forEach(id=>setEl(id,sf,sc));
+  setEl('kpi-net',fmt(net));
+  setEl('kpi-exp',fmt(total));
+  const projMo=Math.max(0,surplus*12);
+  const projTot=projMo+4637;
+  setEl('proj-mo',fmt(projMo));
+  setEl('proj-total',fmt(projTot));
+  renderBudget();
+}
+
+// ── BUDGET ──
+function renderBudget(){
+  const fr=document.getElementById('fixed-rows');
+  const vr=document.getElementById('var-rows');
+  if(!fr||!vr)return;
+  let fs=0,vs=0;
+  fr.innerHTML=FIXED.map(item=>{
+    const v=gv(item.id,item.budget);fs+=v;
+    const pct=Math.min(100,Math.round(v/item.budget*100));
+    const bc=pct>115?'#8b3a3a':pct>95?'#8b6d2a':'var(--olive3)';
+    return`<div class="brow"><div class="bicon">${item.icon}</div><div class="binfo"><div class="bname">${item.name}</div><div class="bsub">${item.sub}</div></div><div class="btrack"><div class="bfill" style="width:${pct}%;background:${bc}"></div></div><div class="bamt">${fmt(v)}</div></div>`;
+  }).join('');
+  vr.innerHTML=VAR.map(item=>{
+    const v=gv(item.id,item.budget);vs+=v;
+    const pct=Math.min(100,Math.round(v/item.budget*100));
+    const bc=pct>115?'#8b3a3a':pct>95?'#8b6d2a':'var(--olive3)';
+    return`<div class="brow"><div class="bicon">${item.icon}</div><div class="binfo"><div class="bname">${item.name}</div><div class="bsub">${item.sub}</div></div><div class="btrack"><div class="bfill" style="width:${pct}%;background:${bc}"></div></div><div class="bamt">${fmt(v)}</div></div>`;
+  }).join('');
+  const loan=gv('u-loan',205);
+  setEl('fixed-total',fmt(fs));setEl('s-fixed',fmt(fs));
+  setEl('var-total',fmt(vs));setEl('s-var',fmt(vs));
+  setEl('s-total',fmt(fs+vs+loan));
+  setEl('s-loans',fmt(loan));
+}
+
+// ── CAR BALANCE ──
+function syncCarBal(){
+  const bal=gv('u-carbal',5185.78);
+  setEl('car-bal-display','$'+bal.toFixed(2));
+  const orig=7688.86;
+  const pct=Math.min(100,Math.round((orig-bal)/orig*100));
+  const pb=document.getElementById('car-prog');if(pb)pb.style.width=pct+'%';
+  setEl('car-pct',pct+'%');
+}
+
+function buildCarSchedule(){
+  const el=document.getElementById('car-schedule');
+  if(!el)return;
+  el.innerHTML=CAR_SCHED.map(r=>`<div class="lrow"><span class="lrow-type">${r.mo}</span><span class="lrate">int $${r.int.toFixed(2)}</span><span class="lbal">${r.bal===0?'<span style="color:var(--olive3);font-style:italic">Paid in full ✓</span>':'$'+r.bal.toFixed(2)}</span></div>`).join('');
+}
+
+// ── HOUSE ──
+function updateHouse(val){
+  const saved=Number(val)||0;
+  const target=30000;
+  const pct=Math.min(100,Math.round(saved/target*100));
+  const pb=document.getElementById('house-prog-bar');if(pb)pb.style.width=pct+'%';
+  const pl=document.getElementById('house-prog-labels');
+  if(pl)pl.innerHTML=`<span>$${saved.toLocaleString()} saved</span><span>$${Math.max(0,target-saved).toLocaleString()} to go</span>`;
+  ['house-prog-ov'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width=pct+'%';});
+  ['house-pct-ov'].forEach(id=>setEl(id,pct+'%'));
+  setEl('kpi-house','$'+saved.toLocaleString());
+  const ui=document.getElementById('u-house');if(ui&&ui.value!=val)ui.value=val;
+  const hi=document.getElementById('house-input');if(hi&&hi.value!=val)hi.value=val;
+}
+function syncHouse(){updateHouse(gv('u-house',0));}
+
+// ── CALENDAR ──
+function buildCal(){
+  const el=document.getElementById('cal-timeline');
+  if(!el)return;
+  const cm={car:'#c08080',house:'#7090c0',money:'var(--olive3)',career:'#a090e0',loan:'#b09040'};
+  const bm={car:'rgba(139,58,58,.07)',house:'rgba(42,90,139,.07)',money:'rgba(107,124,46,.07)',career:'rgba(100,80,160,.07)',loan:'rgba(139,109,42,.07)'};
+  el.innerHTML=CAL.map((m,i)=>{
+    const isLast=i===CAL.length-1;
+    const ph=m.phase?`<div class="cal-phase">${m.phase}</div>`:'';
+    const evs=m.events.map(e=>{
+      const tc=e.type==='car'?'red':e.type==='house'?'blue':e.type==='loan'?'amber':'olive';
+      const tags=(e.tags||[]).map(t=>`<span class="tag ${tc}">${t}</span>`).join('');
+      return`<div class="ev ${e.type}" style="background:${bm[e.type]}"><div class="ev-dot" style="background:${cm[e.type]}"></div><div><div class="ev-title">${e.t}</div><div class="ev-desc">${e.d}</div>${tags?'<div style="margin-top:4px">'+tags+'</div>':''}</div></div>`;
+    }).join('');
+    return`<div class="cal-block"><div class="cal-mc"><div class="cal-mo"><span>${m.mo}</span>${m.yr}</div><div class="cal-dot" style="background:${m.dot}"></div>${isLast?'':'<div class="cal-line"></div>'}</div><div class="cal-ec">${ph}${evs}</div></div>`;
+  }).join('');
+}
+
+// ── INIT ──
+recalc();
+buildCarSchedule();
+buildCal();
+syncCarBal();
+</script>
+</body>
+</html>
